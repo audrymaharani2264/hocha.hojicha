@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hocha - Order & Revenue Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+  :root {
+    --bg: #f3eee9;
+    --card: #fffdfb;
+    --border: #d7c7b8;
+    --accent: #8c5a3c;
+    --accent-dark: #6e422c;
+    --text-dark: #3a2a1e;
+    --text-light: #7b6b63;
+    --shadow: 0 4px 12px rgba(0,0,0,0.07);
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    margin: 0;
+    padding: 1.5rem;
+    color: var(--text-dark);
+  }
+
+  h1 {
+    text-align: center;
+    color: var(--accent-dark);
+    margin-bottom: 2rem;
+    font-size: 1.9rem;
+    letter-spacing: 0.6px;
+  }
+
+  h2 {
+    color: var(--accent-dark);
+    margin-top: 0;
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  h3.category {
+    color: var(--accent-dark);
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.3rem;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    text-align: left;
+  }
+
+  .container {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  }
+
+  .menu-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .menu-card {
+    background: #fffdfb;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1rem 1.2rem;
+    box-shadow: var(--shadow);
+    transition: background 0.3s;
+  }
+
+  .menu-card:hover {
+    background: #f0e4dc;
+  }
+
+  .menu-card h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-dark);
+  }
+
+  .menu-card .price {
+    color: var(--accent);
+    font-weight: 600;
+    margin-top: 0.3rem;
+    font-size: 0.95rem;
+  }
+
+  .menu-card .revenue {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin: 0.2rem 0 0.8rem;
+  }
+
+  .qty-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .qty-control button {
+    width: 42px;
+    height: 38px;
+    border: none;
+    border-radius: 0.6rem;
+    background: #e3d2c4;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .qty-control button:hover {
+    background: #d3bfae;
+  }
+
+  .qty-control input {
+    width: 60px;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    background: #fffaf7;
+    color: var(--text-dark);
+  }
+
+  label {
+    display: block;
+    margin-top: 0.8rem;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+
+  input {
+    width: 100%;
+    padding: 0.45rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+    margin-top: 0.2rem;
+    background: #fffaf7;
+    font-family: 'Poppins', sans-serif;
+  }
+
+  .btn {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.7rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 0.6rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .btn:hover {
+    background: var(--accent-dark);
+    transform: translateY(-1px);
+  }
+
+  pre {
+    background: #f0e4dc;
+    padding: 1rem;
+    border-radius: 0.6rem;
+    white-space: pre-wrap;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 768px) {
+    .container { grid-template-columns: 2fr 1fr; }
+  }
+</style>
+</head>
+
+<body>
+  <h1>🤎Hocha - Order & Revenue Tracker🤎</h1>
+
+  <div class="container">
+    <div>
+      <div id="menu" class="card">
+        <h2>Pilih Menu</h2>
+        <h3 class="category">☕ Hojicha Series</h3>
+        <div class="menu-grid" id="hojichaGrid"></div>
+        <h3 class="category">🍵 Matcha Series</h3>
+        <div class="menu-grid" id="matchaGrid"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <h2>Ringkasan</h2>
+        <p>Total Cup: <span id="totalCups">0</span></p>
+        <p>Pendapatan Menu: <span id="menuRevenue">Rp 0</span></p>
+      </div>
+
+      <div class="card">
+        <h2>Input Pendapatan</h2>
+        <label>Cash</label>
+        <input type="number" id="cashInput" value="0">
+        <label>Qris</label>
+        <input type="number" id="qrisInput" value="0" oninput="autoAdjustCash()">
+        <label>Gofood</label>
+        <input type="number" id="gofoodInput" value="0" oninput="autoAdjustCash()">
+        <label>Pengeluaran</label>
+        <input type="number" id="expenseInput" value="0" oninput="autoAdjustCash()">
+        <label>Uang Plus</label>
+        <input type="number" id="plusInput" value="0" oninput="autoAdjustCash()">
+        <button class="btn" onclick="generateReport()">Cetak Laporan Harian</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1.5rem;">
+    <h2>Laporan Harian</h2>
+    <pre id="dailyReport">Belum ada laporan...</pre>
+    <button class="btn" onclick="copyReport()">📋 Copy Laporan</button>
+  </div>
+
+<script>
+  const menuData = {
+    hojicha: [
+      { name: "Hojicha Latte", price: 15000 },
+      { name: "Cloud Cream Hojicha", price: 17000 },
+      { name: "Hojicha Milk Peanut", price: 18000 },
+      { name: "Ube Hojicha", price: 20000 },
+      { name: "Caramel Hojicha", price: 19000 }
+    ],
+    matcha: [
+      { name: "Matcha Latte", price: 16000 },
+      { name: "Matcha Cloud", price: 18000 },
+      { name: "Matcha Cookies", price: 19000 },
+      { name: "Strawberry Matcha", price: 20000 },
+      { name: "Caramel Matcha", price: 20000 }
+    ]
+  };
+
+  const orders = {};
+
+  function renderMenu(category, gridId) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = "";
+    menuData[category].forEach(item => {
+      if (!(item.name in orders)) orders[item.name] = 0;
+      const subtotal = orders[item.name] * item.price;
+      const div = document.createElement("div");
+      div.className = "menu-card";
+      div.innerHTML = `
+        <h4>${item.name}</h4>
+        <div class="price">Rp ${item.price.toLocaleString('id-ID')}</div>
+        <div class="revenue">Pendapatan: Rp ${subtotal.toLocaleString('id-ID')}</div>
+        <div class="qty-control">
+          <button onclick="changeQty('${item.name}', -1)">-</button>
+          <input type="number" id="qty-${item.name.replace(/\s/g,'-')}" value="${orders[item.name]}" min="0" onchange="setQty('${item.name}', this.value)">
+          <button onclick="changeQty('${item.name}', 1)">+</button>
+        </div>
+      `;
+      grid.appendChild(div);
+    });
+  }
+
+  function changeQty(name, delta) {
+    orders[name] = Math.max(0, orders[name] + delta);
+    renderAll();
+    updateSummary();
+    autoAdjustCash();
+  }
+
+  function setQty(name, value) {
+    let val = parseInt(value);
+    if (isNaN(val) || val < 0) val = 0;
+    orders[name] = val;
+    renderAll();
+    updateSummary();
+    autoAdjustCash();
+  }
+
+  function renderAll() {
+    renderMenu("hojicha", "hojichaGrid");
+    renderMenu("matcha", "matchaGrid");
+  }
+
+  function updateSummary() {
+    const totalCups = Object.values(orders).reduce((a,b)=>a+b,0);
+    const menuRevenue = Object.entries(orders).reduce((sum,[n,c])=>{
+      const item = Object.values(menuData).flat().find(i=>i.name===n);
+      return sum + item.price*c;
+    },0);
+    document.getElementById("totalCups").innerText = totalCups;
+    document.getElementById("menuRevenue").innerText = `Rp ${menuRevenue.toLocaleString('id-ID')}`;
+  }
+
+  function autoAdjustCash() {
+    const qris = parseInt(document.getElementById("qrisInput").value)||0;
+    const gofood = parseInt(document.getElementById("gofoodInput").value)||0;
+    const expense = parseInt(document.getElementById("expenseInput").value)||0;
+    const plus = parseInt(document.getElementById("plusInput").value)||0;
+    const menuRevenue = Object.entries(orders).reduce((sum,[n,c])=>{
+      const item = Object.values(menuData).flat().find(i=>i.name===n);
+      return sum + item.price*c;
+    },0);
+
+    // Hitung cash otomatis dari total - qris - gofood
+    let cash = menuRevenue - qris - gofood;
+    if (cash < 0) cash = 0;
+    document.getElementById("cashInput").value = cash;
+
+    // Hitung total cash akhir
+    const finalCash = cash - expense + plus;
+    return finalCash;
+  }
+
+  function generateReport() {
+    const today = new Date();
+    const tanggal = today.toLocaleDateString("id-ID",{ day:"2-digit", month:"long", year:"numeric" });
+    const totalCups = Object.values(orders).reduce((a,b)=>a+b,0);
+    const menuRevenue = Object.entries(orders).reduce((sum,[n,c])=>{
+      const item = Object.values(menuData).flat().find(i=>i.name===n);
+      return sum + item.price*c;
+    },0);
+
+    const cash = parseInt(document.getElementById("cashInput").value)||0;
+    const qris = parseInt(document.getElementById("qrisInput").value)||0;
+    const gofood = parseInt(document.getElementById("gofoodInput").value)||0;
+    const expense = parseInt(document.getElementById("expenseInput").value)||0;
+    const plus = parseInt(document.getElementById("plusInput").value)||0;
+
+    const finalCash = cash - expense + plus;
+    const totalFinal = finalCash + qris + gofood;
+
+    let report = `Tanggal: ${tanggal}\nLaporan Harian\n\nRINCIAN PENJUALAN\n-------------------------\n`;
+    Object.entries(orders).forEach(([n,c])=>{ if(c>0) report += `${n}: ${c} cup\n`; });
+    report += `\nTotal Cup Terjual: ${totalCups}\nPendapatan Menu: Rp ${menuRevenue.toLocaleString('id-ID')}\n\n`;
+    report += `REKAP PENDAPATAN\n-------------------------\n`;
+    report += `Cash : Rp.${cash.toLocaleString('id-ID')}\nQris : Rp.${qris.toLocaleString('id-ID')}\nGofood : Rp.${gofood.toLocaleString('id-ID')}\n`;
+    report += `Pengeluaran : Rp.${expense.toLocaleString('id-ID')}\nUang Plus : Rp.${plus.toLocaleString('id-ID')}\n\n`;
+    report += `=======================\nTotal Akhir\n`;
+    report += `Cash (setelah pengeluaran): Rp.${finalCash.toLocaleString('id-ID')}\nQris : Rp.${qris.toLocaleString('id-ID')}\nGofood : Rp.${gofood.toLocaleString('id-ID')}\n`;
+    report += `Total Keseluruhan : Rp.${totalFinal.toLocaleString('id-ID')}\n=======================`;
+
+    document.getElementById("dailyReport").innerText = report;
+  }
+
+  function copyReport() {
+    const reportText = document.getElementById("dailyReport").innerText;
+    navigator.clipboard.writeText(reportText).then(() => alert("Laporan berhasil dicopy ✅"));
+  }
+
+  renderAll();
+  updateSummary();
+</script>
+</body>
+</html>
